@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geoquiz/module/Question.dart';
 
@@ -8,21 +9,23 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'GeoQuiz',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'GeoQuiz'),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: MaterialApp(
+          title: 'GeoQuiz',
+          theme: ThemeData(
+            // This is the theme of your application.
+            //
+            // Try running your application with "flutter run". You'll see the
+            // application has a blue toolbar. Then, without quitting the app, try
+            // changing the primarySwatch below to Colors.green and then invoke
+            // "hot reload" (press "r" in the console where you ran "flutter run",
+            // or simply save your changes to "hot reload" in a Flutter IDE).
+            // Notice that the counter didn't reset back to zero; the application
+            // is not restarted.
+            primarySwatch: Colors.blue,
+          ),
+          home: MyHomePage(title: 'GeoQuiz')),
     );
   }
 }
@@ -82,7 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   int _getNextIndex(bool isNext) {
-    return ((_curIndex + _questions.length) + (isNext ? 1 : -1)) % _questions.length;
+    return ((_curIndex + _questions.length) + (isNext ? 1 : -1)) %
+        _questions.length;
   }
 
   Widget _buildButton(String text, {VoidCallback onPressed}) {
@@ -121,74 +125,146 @@ class _MyHomePageState extends State<MyHomePage> {
           // the App.build method, and use it to set our appbar title.
           title: Text(widget.title),
         ),
-        body: Center(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          child: Column(
-            // Column is also a layout widget. It takes a list of children and
-            // arranges them vertically. By default, it sizes itself to fit its
-            // children horizontally, and tries to be as tall as its parent.
-            //
-            // Invoke "debug painting" (press "p" in the console, choose the
-            // "Toggle Debug Paint" action from the Flutter Inspector in Android
-            // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-            // to see the wireframe for each widget.
-            //
-            // Column has various properties to control how it sizes itself and
-            // how it positions its children. Here we use mainAxisAlignment to
-            // center the children vertically; the main axis here is the vertical
-            // axis because Columns are vertical (the cross axis would be
-            // horizontal).
+        body: OrientationBuilder(
+          builder: (BuildContext context, Orientation orientation) {
+            Widget body;
+            if (orientation == Orientation.portrait) {
+              body = _buildPortraitLayout();
+            } else {
+              body = _buildLandscapeLayout();
+            }
+            return body;
+          },
+        ));
+  }
+
+  Widget _buildPortraitLayout() {
+    return Center(
+      // Center is a layout widget. It takes a single child and positions it
+      // in the middle of the parent.
+      child: Column(
+        // Column is also a layout widget. It takes a list of children and
+        // arranges them vertically. By default, it sizes itself to fit its
+        // children horizontally, and tries to be as tall as its parent.
+        //
+        // Invoke "debug painting" (press "p" in the console, choose the
+        // "Toggle Debug Paint" action from the Flutter Inspector in Android
+        // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+        // to see the wireframe for each widget.
+        //
+        // Column has various properties to control how it sizes itself and
+        // how it positions its children. Here we use mainAxisAlignment to
+        // center the children vertically; the main axis here is the vertical
+        // axis because Columns are vertical (the cross axis would be
+        // horizontal).
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          GestureDetector(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Text(_curQuestion.text),
+              ),
+              onTap: () {
+                _navigationQuestion(true);
+              }),
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              GestureDetector(
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Text(_curQuestion.text),
-                  ),
-                  onTap: () {
-                    _navigationQuestion(true);
-                  }),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  Container(
-                      margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                      child:
-                          _buildButton('true', onPressed: _checkAnswer(true))),
-                  Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child:
-                          _buildButton('false', onPressed: _checkAnswer(false)))
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  Container(
-                      margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                      width: EdgeInsets.all(24).horizontal,
-                      child: RaisedButton(
-                        onPressed: () {
-                          _navigationQuestion(false);
-                        },
-                        child: Icon(Icons.arrow_back_ios),
-                      )),
-                  Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      width: EdgeInsets.all(24).horizontal,
-                      child: RaisedButton(
-                        onPressed: () {
-                          _navigationQuestion(true);
-                        },
-                        child: Icon(Icons.arrow_forward_ios),
-                      )),
-                ],
-              ),
+              Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                  child: _buildButton('true', onPressed: _checkAnswer(true))),
+              Container(
+                  margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                  child: _buildButton('false', onPressed: _checkAnswer(false)))
             ],
           ),
-        ));
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                  width: EdgeInsets.all(24).horizontal,
+                  child: RaisedButton(
+                    onPressed: () {
+                      _navigationQuestion(false);
+                    },
+                    child: Icon(Icons.arrow_back_ios),
+                  )),
+              Container(
+                  margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                  width: EdgeInsets.all(24).horizontal,
+                  child: RaisedButton(
+                    onPressed: () {
+                      _navigationQuestion(true);
+                    },
+                    child: Icon(Icons.arrow_forward_ios),
+                  )),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLandscapeLayout() {
+    return Stack(
+        alignment: AlignmentDirectional.bottomCenter,
+        children: <Widget>[
+          Container(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                GestureDetector(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Text(_curQuestion.text),
+                    ),
+                    onTap: () {
+                      _navigationQuestion(true);
+                    }),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                        child: _buildButton('true', onPressed: _checkAnswer(true))),
+                    Container(
+                        margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                        child:
+                            _buildButton('false', onPressed: _checkAnswer(false)))
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Container(
+                  margin:EdgeInsets.fromLTRB(16, 0, 0, 16),
+                  width: EdgeInsets.all(24).horizontal,
+                  child: RaisedButton(
+                    onPressed: () {
+                      _navigationQuestion(false);
+                    },
+                    child: Icon(Icons.arrow_back_ios),
+                  )),
+              Container(
+                  margin:EdgeInsets.fromLTRB(0, 0, 16, 16),
+                  width: EdgeInsets.all(24).horizontal,
+                  child: RaisedButton(
+                    onPressed: () {
+                      _navigationQuestion(true);
+                    },
+                    child: Icon(Icons.arrow_forward_ios),
+                  )),
+            ],
+          ),
+        ],
+    );
   }
 }
