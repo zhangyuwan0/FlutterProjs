@@ -49,6 +49,7 @@ class _CheatPageState extends State<CheatPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        title: Text("Cheat"),
         leading: GestureDetector(
           onTap: () {
             _backToMainPage(context);
