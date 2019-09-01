@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -54,6 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
   int _curIndex = 0;
   Question _curQuestion;
 
+  Map<Question, bool> _answerQuestions = HashMap();
+  int _score = 0;
+
   @override
   void initState() {
     super.initState();
@@ -94,20 +99,50 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: onPressed ??= null,
         child: Text(
           text,
-          style: Theme.of(context).textTheme.button,
+          style: Theme
+              .of(context)
+              .textTheme
+              .button,
         ));
   }
 
   Function _checkAnswer(bool answer) {
     return () {
       var isCorrect = _curQuestion.answerTrue == answer;
-      // 默认样式的Toast则gravity不生效？
+      bool isAnswered = _checkAlreadyAnswered(isCorrect);
+      bool isAlreadyComplete = _answerQuestions.length == _questions.length;
+      // 默认样式的Toast则gravity不生效？已经修复
       Fluttertoast.showToast(
-          msg: isCorrect ? 'Correct!' : 'Incorrect!',
+          msg: isAlreadyComplete
+              ? "Already completed.Your\'s score is $_score."
+              : isAnswered
+              ? 'Do not repeat answers'
+              : isCorrect ? 'Correct!' : 'Incorrect!',
           toastLength: Toast.LENGTH_SHORT,
           backgroundColor: null,
-          textColor: null,
-          gravity: ToastGravity.CENTER);
+          textColor: null);
+    };
+  }
+
+  bool _checkAlreadyAnswered(bool isCorrect) {
+    if (!_answerQuestions.containsKey(_curQuestion)) {
+      _answerQuestions[_curQuestion] = isCorrect;
+      _score += isCorrect ? 1 : 0;
+      return true;
+    }
+    return false;
+  }
+
+  Function _reset() {
+    return () {
+      setState(() {
+        _curIndex = 0;
+        _score = 0;
+        _answerQuestions.clear();
+        _curQuestion = _questions[_curIndex];
+      });
+
+      Fluttertoast.showToast(msg: "Reset Completed!");
     };
   }
 
@@ -135,7 +170,13 @@ class _MyHomePageState extends State<MyHomePage> {
             }
             return body;
           },
-        ));
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.autorenew),
+          tooltip: "reset",
+          onPressed: _reset(),
+        ),
+    );
   }
 
   Widget _buildPortraitLayout() {
@@ -146,7 +187,10 @@ class _MyHomePageState extends State<MyHomePage> {
           GestureDetector(
               child: Padding(
                 padding: EdgeInsets.all(24),
-                child: Text(_curQuestion.text),
+                child: Text(
+                  _curQuestion.text,
+                  textAlign: TextAlign.center,
+                ),
               ),
               onTap: () {
                 _navigationQuestion(true);
@@ -169,7 +213,9 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               Container(
                   margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                  width: EdgeInsets.all(24).horizontal,
+                  width: EdgeInsets
+                      .all(24)
+                      .horizontal,
                   child: RaisedButton(
                     onPressed: () {
                       _navigationQuestion(false);
@@ -178,7 +224,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   )),
               Container(
                   margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                  width: EdgeInsets.all(24).horizontal,
+                  width: EdgeInsets
+                      .all(24)
+                      .horizontal,
                   child: RaisedButton(
                     onPressed: () {
                       _navigationQuestion(true);
@@ -204,7 +252,10 @@ class _MyHomePageState extends State<MyHomePage> {
               GestureDetector(
                   child: Padding(
                     padding: EdgeInsets.all(24),
-                    child: Text(_curQuestion.text),
+                    child: Text(
+                      _curQuestion.text,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                   onTap: () {
                     _navigationQuestion(true);
@@ -215,12 +266,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   Container(
                       margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                      child: _buildButton('true',
-                          onPressed: _checkAnswer(true))),
+                      child:
+                      _buildButton('true', onPressed: _checkAnswer(true))),
                   Container(
                       margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: _buildButton('false',
-                          onPressed: _checkAnswer(false)))
+                      child:
+                      _buildButton('false', onPressed: _checkAnswer(false)))
                 ],
               ),
             ],
@@ -231,7 +282,9 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Container(
                 margin: EdgeInsets.fromLTRB(16, 0, 0, 16),
-                width: EdgeInsets.all(24).horizontal,
+                width: EdgeInsets
+                    .all(24)
+                    .horizontal,
                 child: RaisedButton(
                   onPressed: () {
                     _navigationQuestion(false);
@@ -240,7 +293,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 )),
             Container(
                 margin: EdgeInsets.fromLTRB(0, 0, 16, 16),
-                width: EdgeInsets.all(24).horizontal,
+                width: EdgeInsets
+                    .all(24)
+                    .horizontal,
                 child: RaisedButton(
                   onPressed: () {
                     _navigationQuestion(true);
