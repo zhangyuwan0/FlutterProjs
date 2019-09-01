@@ -3,7 +3,9 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geoquiz/module/CheatModule.dart';
 import 'package:geoquiz/module/Question.dart';
+import 'package:geoquiz/page/Cheat.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,6 +17,9 @@ class MyApp extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: MaterialApp(
           title: 'GeoQuiz',
+          routes: {
+            CheatPage.ROUTE_NAME: (context) => CheatPage(),
+          },
           theme: ThemeData(
             // This is the theme of your application.
             //
@@ -58,6 +63,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Map<Question, bool> _answerQuestions = HashMap();
   int _score = 0;
+
+  Set<Question> _cheatQuestions = HashSet();
+
+  int _cheatCount = 0;
 
   @override
   void initState() {
@@ -108,11 +117,14 @@ class _MyHomePageState extends State<MyHomePage> {
       var isCorrect = _curQuestion.answerTrue == answer;
       bool isAnswered = _checkAlreadyAnswered(isCorrect);
       bool isAlreadyComplete = _answerQuestions.length == _questions.length;
+      bool isCheated = _cheatQuestions.contains(_curQuestion);
       String toastMsg = isAlreadyComplete
           ? "Already completed.Your\'s score is $_score."
-          : isAnswered
-          ? 'Do not repeat answers'
-          : isCorrect ? 'Correct!' : 'Incorrect!';
+          : isCheated
+              ? "Cheating is wrong."
+              : isAnswered
+                  ? 'Do not repeat answers'
+                  : isCorrect ? 'Correct!' : 'Incorrect!';
       // 默认样式的Toast则gravity不生效？已经修复
       Fluttertoast.showToast(
           msg: toastMsg,
@@ -131,38 +143,32 @@ class _MyHomePageState extends State<MyHomePage> {
     return true;
   }
 
-  Function _reset() {
-    return () {
+  void _reset() {
       setState(() {
         _curIndex = 0;
         _score = 0;
         _answerQuestions.clear();
         _curQuestion = _questions[_curIndex];
+        _cheatCount = 0;
       });
 
       Fluttertoast.showToast(msg: "Reset Completed!");
-    };
+
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return OrientationBuilder(
-        builder: (BuildContext context, Orientation orientation) {
-          Widget body;
-          if (orientation == Orientation.portrait) {
-            body = _buildPortraitLayout();
-          } else {
-            body = _buildLandscapeLayout();
-          }
-          return body;
-        },
-      );
+      builder: (BuildContext context, Orientation orientation) {
+        Widget body;
+        if (orientation == Orientation.portrait) {
+          body = _buildPortraitLayout();
+        } else {
+          body = _buildLandscapeLayout();
+        }
+        return body;
+      },
+    );
   }
 
   Widget _buildPortraitLayout() {
@@ -201,6 +207,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           _buildButton('false', onPressed: _checkAnswer(false)))
                 ],
               ),
+              RaisedButton(
+                child: Text("CHEAT!"),
+                onPressed: _cheatPressed(),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
@@ -231,8 +241,21 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.autorenew),
           tooltip: "reset",
-          onPressed: _reset(),
+          onPressed: _reset,
         ));
+  }
+
+  void navigatorToCheatPage() async {
+    print("navigation");
+    final cheat = await Navigator.pushNamed(context, CheatPage.ROUTE_NAME,
+        arguments: Cheat(_curQuestion)) as Cheat;
+
+    if (!_cheatQuestions.contains(cheat.question) && cheat.isCheated) {
+      _cheatQuestions.add(cheat.question);
+      setState(() {
+        _cheatCount++;
+      });
+    }
   }
 
   Widget _buildLandscapeLayout() {
@@ -275,6 +298,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             onPressed: _checkAnswer(false)))
                   ],
                 ),
+                RaisedButton(
+                  child: Text("CHEAT!"),
+                  onPressed: _cheatPressed(),
+                ),
               ],
             ),
           ),
@@ -307,9 +334,21 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.autorenew),
         backgroundColor: Colors.green,
         tooltip: "reset",
-        onPressed: _reset(),
+        onPressed: _reset,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
+  }
+
+  Function _cheatPressed() {
+    var func;
+    if(_cheatCount >= 3) {
+      func = null;
+    }else {
+      func = () {
+        navigatorToCheatPage();
+      };
+    }
+    return func;
   }
 }
