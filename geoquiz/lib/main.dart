@@ -140,23 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildPortraitLayout() {
     return Center(
-      // Center is a layout widget. It takes a single child and positions it
-      // in the middle of the parent.
       child: Column(
-        // Column is also a layout widget. It takes a list of children and
-        // arranges them vertically. By default, it sizes itself to fit its
-        // children horizontally, and tries to be as tall as its parent.
-        //
-        // Invoke "debug painting" (press "p" in the console, choose the
-        // "Toggle Debug Paint" action from the Flutter Inspector in Android
-        // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-        // to see the wireframe for each widget.
-        //
-        // Column has various properties to control how it sizes itself and
-        // how it positions its children. Here we use mainAxisAlignment to
-        // center the children vertically; the main axis here is the vertical
-        // axis because Columns are vertical (the cross axis would be
-        // horizontal).
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           GestureDetector(
@@ -209,62 +193,63 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildLandscapeLayout() {
-    return Stack(
-        alignment: AlignmentDirectional.bottomCenter,
-        children: <Widget>[
-          Container(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                GestureDetector(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Text(_curQuestion.text),
-                    ),
-                    onTap: () {
-                      _navigationQuestion(true);
-                    }),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Container(
-                        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                        child: _buildButton('true', onPressed: _checkAnswer(true))),
-                    Container(
-                        margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                        child:
-                            _buildButton('false', onPressed: _checkAnswer(false)))
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(
-                  margin:EdgeInsets.fromLTRB(16, 0, 0, 16),
-                  width: EdgeInsets.all(24).horizontal,
-                  child: RaisedButton(
-                    onPressed: () {
-                      _navigationQuestion(false);
-                    },
-                    child: Icon(Icons.arrow_back_ios),
-                  )),
-              Container(
-                  margin:EdgeInsets.fromLTRB(0, 0, 16, 16),
-                  width: EdgeInsets.all(24).horizontal,
-                  child: RaisedButton(
-                    onPressed: () {
-                      _navigationQuestion(true);
-                    },
-                    child: Icon(Icons.arrow_forward_ios),
-                  )),
+              GestureDetector(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Text(_curQuestion.text),
+                  ),
+                  onTap: () {
+                    _navigationQuestion(true);
+                  }),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                      margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                      child: _buildButton('true',
+                          onPressed: _checkAnswer(true))),
+                  Container(
+                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                      child: _buildButton('false',
+                          onPressed: _checkAnswer(false)))
+                ],
+              ),
             ],
           ),
-        ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Container(
+                margin: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                width: EdgeInsets.all(24).horizontal,
+                child: RaisedButton(
+                  onPressed: () {
+                    _navigationQuestion(false);
+                  },
+                  child: Icon(Icons.arrow_back_ios),
+                )),
+            Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 16, 16),
+                width: EdgeInsets.all(24).horizontal,
+                child: RaisedButton(
+                  onPressed: () {
+                    _navigationQuestion(true);
+                  },
+                  child: Icon(Icons.arrow_forward_ios),
+                )),
+          ],
+        ),
+      ],
     );
   }
 }
