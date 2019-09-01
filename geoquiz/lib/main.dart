@@ -108,13 +108,14 @@ class _MyHomePageState extends State<MyHomePage> {
       var isCorrect = _curQuestion.answerTrue == answer;
       bool isAnswered = _checkAlreadyAnswered(isCorrect);
       bool isAlreadyComplete = _answerQuestions.length == _questions.length;
+      String toastMsg = isAlreadyComplete
+          ? "Already completed.Your\'s score is $_score."
+          : isAnswered
+          ? 'Do not repeat answers'
+          : isCorrect ? 'Correct!' : 'Incorrect!';
       // 默认样式的Toast则gravity不生效？已经修复
       Fluttertoast.showToast(
-          msg: isAlreadyComplete
-              ? "Already completed.Your\'s score is $_score."
-              : isAnswered
-                  ? 'Do not repeat answers'
-                  : isCorrect ? 'Correct!' : 'Incorrect!',
+          msg: toastMsg,
           toastLength: Toast.LENGTH_SHORT,
           backgroundColor: null,
           textColor: null);
@@ -125,9 +126,9 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!_answerQuestions.containsKey(_curQuestion)) {
       _answerQuestions[_curQuestion] = isCorrect;
       _score += isCorrect ? 1 : 0;
-      return true;
+      return false;
     }
-    return false;
+    return true;
   }
 
   Function _reset() {
