@@ -99,10 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: onPressed ??= null,
         child: Text(
           text,
-          style: Theme
-              .of(context)
-              .textTheme
-              .button,
+          style: Theme.of(context).textTheme.button,
         ));
   }
 
@@ -116,8 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
           msg: isAlreadyComplete
               ? "Already completed.Your\'s score is $_score."
               : isAnswered
-              ? 'Do not repeat answers'
-              : isCorrect ? 'Correct!' : 'Incorrect!',
+                  ? 'Do not repeat answers'
+                  : isCorrect ? 'Correct!' : 'Incorrect!',
           toastLength: Toast.LENGTH_SHORT,
           backgroundColor: null,
           textColor: null);
@@ -154,98 +151,27 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    return OrientationBuilder(
+        builder: (BuildContext context, Orientation orientation) {
+          Widget body;
+          if (orientation == Orientation.portrait) {
+            body = _buildPortraitLayout();
+          } else {
+            body = _buildLandscapeLayout();
+          }
+          return body;
+        },
+      );
+  }
+
+  Widget _buildPortraitLayout() {
     return Scaffold(
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
           title: Text(widget.title),
         ),
-        body: OrientationBuilder(
-          builder: (BuildContext context, Orientation orientation) {
-            Widget body;
-            if (orientation == Orientation.portrait) {
-              body = _buildPortraitLayout();
-            } else {
-              body = _buildLandscapeLayout();
-            }
-            return body;
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.autorenew),
-          tooltip: "reset",
-          onPressed: _reset(),
-        ),
-    );
-  }
-
-  Widget _buildPortraitLayout() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          GestureDetector(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text(
-                  _curQuestion.text,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              onTap: () {
-                _navigationQuestion(true);
-              }),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Container(
-                  margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                  child: _buildButton('true', onPressed: _checkAnswer(true))),
-              Container(
-                  margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                  child: _buildButton('false', onPressed: _checkAnswer(false)))
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Container(
-                  margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                  width: EdgeInsets
-                      .all(24)
-                      .horizontal,
-                  child: RaisedButton(
-                    onPressed: () {
-                      _navigationQuestion(false);
-                    },
-                    child: Icon(Icons.arrow_back_ios),
-                  )),
-              Container(
-                  margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                  width: EdgeInsets
-                      .all(24)
-                      .horizontal,
-                  child: RaisedButton(
-                    onPressed: () {
-                      _navigationQuestion(true);
-                    },
-                    child: Icon(Icons.arrow_forward_ios),
-                  )),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLandscapeLayout() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Expanded(
-          flex: 1,
+        body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -262,49 +188,127 @@ class _MyHomePageState extends State<MyHomePage> {
                   }),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   Container(
                       margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
                       child:
-                      _buildButton('true', onPressed: _checkAnswer(true))),
+                          _buildButton('true', onPressed: _checkAnswer(true))),
                   Container(
                       margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
                       child:
-                      _buildButton('false', onPressed: _checkAnswer(false)))
+                          _buildButton('false', onPressed: _checkAnswer(false)))
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Container(
+                      margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                      width: EdgeInsets.all(24).horizontal,
+                      child: RaisedButton(
+                        onPressed: () {
+                          _navigationQuestion(false);
+                        },
+                        child: Icon(Icons.arrow_back_ios),
+                      )),
+                  Container(
+                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                      width: EdgeInsets.all(24).horizontal,
+                      child: RaisedButton(
+                        onPressed: () {
+                          _navigationQuestion(true);
+                        },
+                        child: Icon(Icons.arrow_forward_ios),
+                      )),
                 ],
               ),
             ],
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Container(
-                margin: EdgeInsets.fromLTRB(16, 0, 0, 16),
-                width: EdgeInsets
-                    .all(24)
-                    .horizontal,
-                child: RaisedButton(
-                  onPressed: () {
-                    _navigationQuestion(false);
-                  },
-                  child: Icon(Icons.arrow_back_ios),
-                )),
-            Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 16, 16),
-                width: EdgeInsets
-                    .all(24)
-                    .horizontal,
-                child: RaisedButton(
-                  onPressed: () {
-                    _navigationQuestion(true);
-                  },
-                  child: Icon(Icons.arrow_forward_ios),
-                )),
-          ],
-        ),
-      ],
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.autorenew),
+          tooltip: "reset",
+          onPressed: _reset(),
+        ));
+  }
+
+  Widget _buildLandscapeLayout() {
+    return Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                GestureDetector(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Text(
+                        _curQuestion.text,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    onTap: () {
+                      _navigationQuestion(true);
+                    }),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                        child: _buildButton('true',
+                            onPressed: _checkAnswer(true))),
+                    Container(
+                        margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                        child: _buildButton('false',
+                            onPressed: _checkAnswer(false)))
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Container(
+                  margin: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                  width: EdgeInsets.all(24).horizontal,
+                  child: RaisedButton(
+                    onPressed: () {
+                      _navigationQuestion(false);
+                    },
+                    child: Icon(Icons.arrow_back_ios),
+                  )),
+              Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 16, 16),
+                  width: EdgeInsets.all(24).horizontal,
+                  child: RaisedButton(
+                    onPressed: () {
+                      _navigationQuestion(true);
+                    },
+                    child: Icon(Icons.arrow_forward_ios),
+                  )),
+            ],
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.autorenew),
+        backgroundColor: Colors.green,
+        tooltip: "reset",
+        onPressed: _reset(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 }
