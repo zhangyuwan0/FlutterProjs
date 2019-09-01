@@ -58,6 +58,8 @@ class _CheatPageState extends State<CheatPage> {
       ),
       body: Center(
         child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text("Are you sure want do this?"),
             Container(
